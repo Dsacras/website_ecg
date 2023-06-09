@@ -15,7 +15,6 @@ st.set_page_config(
    initial_sidebar_state="expanded",
 )
 
-
 def background_image_style(image_path):
     encoded = load_image(image_path)
     style = f'''
