@@ -12,7 +12,7 @@ st.set_page_config(
    page_title="ECG Image Uploader",
    page_icon= '🖼️',
    layout="centered",
-   initial_sidebar_state="expanded",
+   initial_sidebar_state="collapsed",
 )
 
 def background_image_style(image_path):
