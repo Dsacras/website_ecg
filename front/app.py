@@ -7,6 +7,8 @@ from streamlit_extras.switch_page_button import switch_page
 
 from streamlit_card import card
 
+from img_preprocessing import load_image
+
 # Set page tab display
 st.set_page_config(
    page_title="ECG Image Uploader",
