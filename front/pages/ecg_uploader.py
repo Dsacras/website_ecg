@@ -7,18 +7,13 @@ from pdf2image import convert_from_bytes
 import io
 
 def convert_image_to_byte(image):
-  # create BytesIO in the memory
   imgByteArr = io.BytesIO()
-  # save image
   image.save(imgByteArr, format=image.format)
-  # Turn object to byte image
   imgByteArr = imgByteArr.getvalue()
   return imgByteArr
 
-# Load templates at start
 templates = read_templates()
 
-# Set page tab display
 st.set_page_config(
    page_title="ECG Image Uploader",
    page_icon= '🖼️',
@@ -29,14 +24,12 @@ st.set_page_config(
 load_dotenv()
 url = os.getenv('API_URL')
 
-# App title and description
 st.title('ECG Image Uploader 📸')
 
 img_file = st.file_uploader("Let's see if your ECG is healthy")
 st.text("")
 
 if img_file is not None:
-    #check file format
     file_format = str(img_file.name).split('.')[-1]
     if file_format == "pdf" or file_format == "jpg" or file_format == "png":
         if file_format == "pdf":
@@ -44,6 +37,15 @@ if img_file is not None:
             file_bytes=convert_image_to_byte(file_bytes[0])
         elif file_format == "jpg" or file_format == "png":
             file_bytes = img_file.read()
+
+    # Check if a new file has been uploaded
+    if 'last_file' not in st.session_state or st.session_state['last_file'] != file_bytes:
+        # A new file has been uploaded. Reset the session state variables
+        for key in list(st.session_state.keys()):
+            if key in ['image_raw', 'max_loc', 'max_w', 'max_h', 'logged_image']:
+                del st.session_state[key]
+
+    st.session_state['last_file'] = file_bytes  # Update the last uploaded file in the session state
 
     if 'image_raw' not in st.session_state or 'max_loc' not in st.session_state or 'max_w' not in st.session_state or 'max_h' not in st.session_state:
         with st.spinner("Processing the image..."):
