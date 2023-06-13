@@ -60,10 +60,14 @@ def transform_image(cropped):
     # return tensor image
     return transform(cropped)
 
-def process_ecg_image(file, padding, templates):
+def process_ecg_image(file, padding, templates, crop=True):
     img, img_color = load_image(file)
     max_val, max_loc, max_w, max_h = match_template(img, templates)
-    return img_color, max_loc, max_w, max_h
+    if crop:
+        cropped = crop_and_draw(img_color, max_loc, max_w, max_h, padding)
+        return cropped
+    else:
+        return img_color
 
 def crop_manual(image_array, top, left, bottom, right):
     """
