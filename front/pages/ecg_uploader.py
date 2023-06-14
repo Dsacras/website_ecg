@@ -5,12 +5,13 @@ from img_preprocessing import crop_manual, process_ecg_image, read_templates
 from PIL import Image
 from pdf2image import convert_from_bytes
 import io
+import time
 
 def convert_image_to_byte(image):
-  imgByteArr = io.BytesIO()
-  image.save(imgByteArr, format=image.format)
-  imgByteArr = imgByteArr.getvalue()
-  return imgByteArr
+    imgByteArr = io.BytesIO()
+    image.save(imgByteArr, format=image.format)
+    imgByteArr = imgByteArr.getvalue()
+    return imgByteArr
 
 templates = read_templates()
 
@@ -26,19 +27,17 @@ url = os.getenv('API_URL')
 
 st.title('ECG Image Uploader 📸')
 
-img_file = st.file_uploader("Let's see if your ECG is healthy")
-st.text("")
+unique_key = str(time.time())
+img_file = st.file_uploader("Let's see if your ECG is healthy", key=unique_key)
 
 if img_file is not None:
     file_format = str(img_file.name).split('.')[-1]
-    if file_format == "pdf" or file_format == "jpg" or file_format == "png":
-        if file_format == "pdf":
-            file_bytes = convert_from_bytes(img_file.read())
-            file_bytes=convert_image_to_byte(file_bytes[0])
-        elif file_format == "jpg" or file_format == "png":
-            file_bytes = img_file.read()
+    if file_format == "pdf":
+        file_bytes = convert_from_bytes(img_file.read())
+        file_bytes=convert_image_to_byte(file_bytes[0])
+    elif file_format == "jpg" or file_format == "png":
+        file_bytes = img_file.read()
 
-    # Check if a new file has been uploaded
     if 'last_file' not in st.session_state or st.session_state['last_file'] != file_bytes:
         # A new file has been uploaded. Reset the session state variables
         for key in list(st.session_state.keys()):
@@ -70,3 +69,6 @@ if img_file is not None:
         st.session_state['logged_image'] = image_array
         st.success('Image version logged successfully!')
         st.balloons()  # This will trigger the balloon animation
+
+    # Clear the file uploader widget using the key
+    st.file_uploader("Let's see if your ECG is healthy", key="uploader", value=None)
