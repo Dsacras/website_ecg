@@ -14,9 +14,8 @@ def read_templates():
     """
     return [cv2.imread("./templates/"+file, cv2.IMREAD_GRAYSCALE) for file in os.listdir("./templates") if file.lower().endswith(('.png'))]
 
-def load_image(file):
-    img_bytes = file.read()
-    nparr = np.frombuffer(img_bytes, np.uint8)
+def load_image(file_bytes):
+    nparr = np.frombuffer(file_bytes, np.uint8)
     img_color = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # Convert byte array into an image
     img = cv2.cvtColor(img_color, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
     return img, img_color
@@ -41,11 +40,9 @@ def match_template(img, templates, scale_start = 0.6, scale_end = 1.2,scale_step
                 max_h = h
     return max_val, max_loc, max_w, max_h
 
-def crop_and_draw(img_color, max_loc, max_w, max_h,padding_left_right = -10, padding_bottom = 10 ):
-      # Reduce padding on left and right
-      # Add padding at the bottom
-    top_left = max(max_loc[0] + padding_left_right, 0), max(max_loc[1], 0)
-    bottom_right = min(top_left[0] + max_w - 2*padding_left_right, img_color.shape[1]), min(top_left[1] + max_h + padding_bottom, img_color.shape[0])
+def crop_and_draw(img_color, max_loc, max_w, max_h, padding):
+    top_left = max(max_loc[0] - padding, 0), max(max_loc[1] - padding, 0)
+    bottom_right = min(top_left[0] + max_w + 2 * padding, img_color.shape[1]), min(top_left[1] + max_h + 2 * padding, img_color.shape[0])
     cv2.rectangle(img_color, top_left, bottom_right, (0, 255, 0), 2)
     cropped = img_color[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
     return cropped
@@ -63,10 +60,15 @@ def transform_image(cropped):
     # return tensor image
     return transform(cropped)
 
-def process_ecg_image(file):
-    templates = read_templates()
+def process_ecg_image(file, padding, templates):
     img, img_color = load_image(file)
     max_val, max_loc, max_w, max_h = match_template(img, templates)
-    cropped = crop_and_draw( img_color, max_loc, max_w, max_h)
-    # transform_image(cropped)
-    return cropped
+    return img_color, max_loc, max_w, max_h
+
+def crop_manual(image_array, top, left, bottom, right):
+    """
+    This function receives an image array and cropping coordinates, and returns the cropped image array.
+    """
+    img = Image.fromarray(image_array)
+    img_cropped = img.crop((left, top, right, bottom))
+    return np.array(img_cropped)
