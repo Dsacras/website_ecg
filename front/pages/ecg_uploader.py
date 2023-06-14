@@ -67,6 +67,9 @@ if img_file is not None:
 
     if st.button('Log this version'):
         st.session_state['logged_image'] = image_array
+        url = 'https://localhost:8000/predict'
+        image = request.get(url,params={"image":image_array})
+        print(type(image))
         st.success('Image version logged successfully!')
         st.balloons()  # This will trigger the balloon animation
 
