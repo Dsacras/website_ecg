@@ -5,6 +5,7 @@ from img_preprocessing import crop_manual, process_ecg_image, read_templates
 from PIL import Image
 from pdf2image import convert_from_bytes
 import io
+import requests
 
 def convert_image_to_byte(image):
   # create BytesIO in the memory
@@ -65,6 +66,11 @@ if img_file is not None:
     st.image(processed_image, caption='ECG after padding adjustment')
 
     if st.button('Log this version'):
-        st.session_state['logged_image'] = image_array
-        st.success('Image version logged successfully!')
-        st.balloons()  # This will trigger the balloon animation
+        # st.session_state['logged_image'] = image_array
+        processed_image.save("./image.jpg")
+        url = 'http://localhost:8001/predict'
+        file = {'file': open('./image.jpg', 'rb')}
+        resp = requests.post(url=url, files=file)
+        st.write(resp.json())
+        # st.success('Image version logged successfully!')
+        # st.balloons()  # This will trigger the balloon animation
