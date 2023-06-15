@@ -4,12 +4,12 @@ import os
 from img_preprocessing import crop_manual, process_ecg_image, read_templates
 from PIL import Image
 from pdf2image import convert_from_bytes
-import io
+from io import BytesIO
 import requests
 
 def convert_image_to_byte(image):
   # create BytesIO in the memory
-  imgByteArr = io.BytesIO()
+  imgByteArr = BytesIO()
   # save image
   image.save(imgByteArr, format=image.format)
   # Turn object to byte image
@@ -66,11 +66,12 @@ if img_file is not None:
     st.image(processed_image, caption='ECG after padding adjustment')
 
     if st.button('Log this version'):
-        st.session_state['logged_image'] = image_array
         processed_image.save("./image.jpg")
-        url = 'http://localhost:8001/predict'
+        url = 'http://localhost:8003/predict'
         file = {'file': open('./image.jpg', 'rb')}
-        resp = requests.post(url=url, files=file)
-        st.write(resp.json())
-        # st.success('Image version logged successfully!')
-        # st.balloons()  # This will trigger the balloon animation
+        param = {"model_url": "https://storage.googleapis.com/ecg_photo/final_models/model_20230614-172857"}
+        response = requests.post(url=url, files=file,params=param)
+        print(f"CONT: {response.headers}")
+        st.title(response.headers["prediction"])
+        image = Image.open(BytesIO(response.content))
+        st.image(image)
