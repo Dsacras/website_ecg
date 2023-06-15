@@ -12,7 +12,7 @@ def read_templates():
     """
     Read folder with input photo templates
     """
-    return [cv2.imread("./templates/"+file, cv2.IMREAD_GRAYSCALE) for file in os.listdir("./templates") if file.lower().endswith(('.png'))]
+    return [cv2.imread("front/templates/"+file, cv2.IMREAD_GRAYSCALE) for file in os.listdir("./templates") if file.lower().endswith(('.png'))]
 
 def load_image(file_bytes):
     nparr = np.frombuffer(file_bytes, np.uint8)
