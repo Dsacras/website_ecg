@@ -25,14 +25,11 @@ st.set_page_config(
    initial_sidebar_state="collapsed",
 )
 
-# load_dotenv()
-# url = os.getenv('API_URL')
-
-# App title and description
-# st.title('ECG Image Uploader 📸')
 st.markdown("<h1 style='text-align: center; color: black;'>ECG Image Uploader 📸</h1>", unsafe_allow_html=True)
+st.write("")
+st.markdown("<h5 style='text-align: center; color: black; font-size:10'>Let's see if your ECG is healthy</h5>", unsafe_allow_html=True)
 
-img_file = st.file_uploader("Let's see if your ECG is healthy")
+img_file = st.file_uploader("Let's see if your ECG is healthy",label_visibility="hidden")
 st.text("")
 
 if img_file is not None:
@@ -45,11 +42,19 @@ if img_file is not None:
         elif file_format == "jpg" or file_format == "png":
             file_bytes = img_file.read()
 
-    if 'image_raw' not in st.session_state or 'max_loc' not in st.session_state or 'max_w' not in st.session_state or 'max_h' not in st.session_state:
-        with st.spinner("Processing the image..."):
-            st.session_state['image_raw'], st.session_state['max_loc'], st.session_state['max_w'], st.session_state['max_h'] = process_ecg_image(file_bytes, padding=0, templates=templates)
+    # if 'image_raw' not in st.session_state or 'max_loc' not in st.session_state or 'max_w' not in st.session_state or 'max_h' not in st.session_state:
+    with st.spinner("Processing the image..."):
+        st.session_state['image_raw'], st.session_state['max_loc'], st.session_state['max_w'], st.session_state['max_h'] = process_ecg_image(file_bytes, padding=0, templates=templates)
+    st.write("")
+    # st.write("Select padding for ECG area")
+    st.markdown("<h5 style='text-align: center; color: black; font-size:10'>Select padding for ECG area</h5>", unsafe_allow_html=True)
+    padding_slider = st.slider("Select padding for ECG area", -100, 100, 0, format="",label_visibility="hidden")
+    col1, col2 =st.columns([1,1])
+    with col1:
+        st.markdown("<h5 style='text-align: left; color: black; font-size:10'>IN</h5>", unsafe_allow_html=True)
+    with col2:
+        st.markdown("<h5 style='text-align: right; color: black;'>OUT</h5>", unsafe_allow_html=True)
 
-    padding_slider = st.slider("Select padding for ECG area", -100, 100, 0)
     max_loc, max_w, max_h = st.session_state['max_loc'], st.session_state['max_w'], st.session_state['max_h']
 
     # Calculate the cropping coordinates based on the padding value
@@ -88,7 +93,7 @@ if img_file is not None:
         file = {'file': open('./image.jpg', 'rb')}
         param = {"model_url": "https://storage.googleapis.com/ecg_photo/final_models/model_20230614-172857"}
         response = requests.post(url=url, files=file,params=param)
-        st.markdown("<h1 style='text-align: center; color: black;'>ECG result: "+response.headers["prediction"]+"</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: black;'>ECG result: "+response.headers["confidence"]+" "+response.headers["prediction"]+"</h1>", unsafe_allow_html=True)
         image = Image.open(BytesIO(response.content))
         col1, col2,col3 =st.columns([.12,1,.1])
         with col2:
