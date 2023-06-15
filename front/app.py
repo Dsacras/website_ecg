@@ -27,11 +27,12 @@ st.set_page_config(
    initial_sidebar_state="collapsed",
 )
 
-load_dotenv()
-url = os.getenv('API_URL')
+# load_dotenv()
+# url = os.getenv('API_URL')
 
 # App title and description
-st.title('ECG Image Uploader 📸')
+# st.title('ECG Image Uploader 📸')
+st.markdown("<h1 style='text-align: center; color: black;'>ECG Image Uploader 📸</h1>", unsafe_allow_html=True)
 
 img_file = st.file_uploader("Let's see if your ECG is healthy")
 st.text("")
@@ -65,13 +66,32 @@ if img_file is not None:
     processed_image = Image.fromarray(image_array)
     st.image(processed_image, caption='ECG after padding adjustment')
 
-    if st.button('Log this version'):
+    customized_button = st.markdown("""
+    <style >
+    .stDownloadButton, div.stButton {text-align:center}
+    .stDownloadButton button, div.stButton > button:first-child {
+        background-color: #fff;
+        color:#000000;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .stDownloadButton button:hover, div.stButton > button:hover {
+        background-color: #fff;
+        color:#880808;
+    }
+        }
+    </style>""", unsafe_allow_html=True)
+
+
+    if st.button('Upload image'):
         processed_image.save("./image.jpg")
         url = 'http://localhost:8003/predict'
         file = {'file': open('./image.jpg', 'rb')}
         param = {"model_url": "https://storage.googleapis.com/ecg_photo/final_models/model_20230614-172857"}
         response = requests.post(url=url, files=file,params=param)
-        print(f"CONT: {response.headers}")
-        st.title(response.headers["prediction"])
+        st.markdown("<h1 style='text-align: center; color: black;'>ECG result: "+response.headers["prediction"]+"</h1>", unsafe_allow_html=True)
         image = Image.open(BytesIO(response.content))
-        st.image(image)
+        col1, col2,col3 =st.columns([.12,1,.1])
+        with col2:
+            st.image(image, width=550)
