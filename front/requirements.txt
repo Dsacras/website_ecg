@@ -1,0 +1,10 @@
+opencv-python
+numpy
+requests
+torchvision
+scikit-image
+torch
+pillow
+io
+pdf2image
+streamlit

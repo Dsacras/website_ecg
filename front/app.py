@@ -1,6 +1,4 @@
 import streamlit as st
-from dotenv import load_dotenv
-import os
 from img_preprocessing import crop_manual, process_ecg_image, read_templates
 from PIL import Image
 from pdf2image import convert_from_bytes
@@ -86,7 +84,7 @@ if img_file is not None:
 
     if st.button('Upload image'):
         processed_image.save("./image.jpg")
-        url = 'http://localhost:8003/predict'
+        url = 'https://ecg-u7szj34noq-ew.a.run.app/predict'
         file = {'file': open('./image.jpg', 'rb')}
         param = {"model_url": "https://storage.googleapis.com/ecg_photo/final_models/model_20230614-172857"}
         response = requests.post(url=url, files=file,params=param)
