@@ -1,9 +1,10 @@
 opencv-python
 numpy
-scikit-image
+requests
 torchvision
+scikit-image
 torch
 pillow
-streamlit
+io
 pdf2image
-requests
+streamlit
