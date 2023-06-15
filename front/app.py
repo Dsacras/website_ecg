@@ -84,7 +84,7 @@ if img_file is not None:
 
     if st.button('Upload image'):
         processed_image.save("./image.jpg")
-        url = 'https://ecg-u7szj34noq-ew.a.run.app/predict'
+        url = 'https://ecg-final-u7szj34noq-ew.a.run.app/predict'
         file = {'file': open('./image.jpg', 'rb')}
         param = {"model_url": "https://storage.googleapis.com/ecg_photo/final_models/model_20230614-172857"}
         response = requests.post(url=url, files=file,params=param)
