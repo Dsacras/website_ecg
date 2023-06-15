@@ -93,8 +93,6 @@ if img_file is not None:
         file = {'file': open('./image.jpg', 'rb')}
         param = {"model_url": "https://storage.googleapis.com/ecg_photo/final_models/model_20230614-172857"}
         response = requests.post(url=url, files=file,params=param)
-        st.write(response.headers)
-        # st.markdown("<h3 style='text-align: center; color: black;'>ECG result: "+response.headers["confidence"]+" "+response.headers["prediction"]+"</h3>", unsafe_allow_html=True)
 
         st.markdown("<h3 style='text-align: center; color: black;'>ECG result: "+response.headers["prediction"]+"</h3>", unsafe_allow_html=True)
         st.markdown("<h5 style='text-align: center; color: black;font-size:10'>Confidence level: "+response.headers["confidence"]+"</h5>", unsafe_allow_html=True)
